@@ -50,6 +50,9 @@ Default "Python Flake8 Lint" plugin config: <kbd>Preferences</kbd>-><kbd>Package
 
 ```JavaScript
 {
+	// enable flake8 lint
+	"lint_enabled": true,
+
 	// run flake8 lint on file saving
 	"lint_on_save": true,
 	// run flake8 lint on file loading

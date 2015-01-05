@@ -206,6 +206,21 @@ class Flake8NextErrorCommand(sublime_plugin.TextCommand):
         self.view.show(point)
 
 
+class Flake8ToggleCommand(sublime_plugin.TextCommand):
+    """
+    Toggle flake8 lint.
+    """
+    def run(self, edit):
+        """
+        Toggle lint.
+        """
+        debug("run flake8 toggle")
+
+        settings.set("lint_enabled", not settings.get("lint_enabled", True))
+        self.view.set_status("flake8-tip", "flake8: toggled %s" % (
+            "on" if settings.get("lint_enabled", True) else "off"))
+
+
 class Flake8LintCommand(sublime_plugin.TextCommand):
     """
     Do flake8 lint on current file.
@@ -215,6 +230,11 @@ class Flake8LintCommand(sublime_plugin.TextCommand):
         Run flake8 lint.
         """
         debug("run flake8 lint")
+        # check if enabled
+        if not settings.get("lint_enabled", True):
+            debug("skip file: linting disabled")
+            return
+
         # check if active view contains file
         filename = self.view.file_name()
         if not filename:
