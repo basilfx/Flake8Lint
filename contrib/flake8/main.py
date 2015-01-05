@@ -15,7 +15,7 @@ else:
         'flake8'
     )
 
-EXTRA_IGNORE = ['.tox']
+EXTRA_IGNORE = []
 
 
 def main():
@@ -32,7 +32,8 @@ def main():
     report = flake8_style.check_files()
 
     exit_code = print_report(report, flake8_style)
-    raise SystemExit(exit_code > 0)
+    if exit_code > 0:
+        raise SystemExit(exit_code > 0)
 
 
 def print_report(report, flake8_style):
@@ -120,11 +121,17 @@ class Flake8Command(setuptools.Command):
         if self.distribution.py_modules:
             for filename in self.distribution.py_modules:
                 yield "%s.py" % filename
+        # Don't miss the setup.py file itself
+        yield "setup.py"
 
     def run(self):
+        # Prepare
+        paths = list(self.distribution_files())
         flake8_style = get_style_guide(config_file=DEFAULT_CONFIG,
+                                       paths=paths,
                                        **self.options_dict)
-        paths = self.distribution_files()
-        report = flake8_style.check_files(paths)
+
+        # Run the checkers
+        report = flake8_style.check_files()
         exit_code = print_report(report, flake8_style)
         raise SystemExit(exit_code > 0)
